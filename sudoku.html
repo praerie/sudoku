@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <title>Studio Praerie—Sudoku</title>
+
+        <link rel="stylesheet" type="text/css" href="sudoku.css">
+        <script src="sudoku.js"></script>
+    </head>
+    <body>
+        <h1>Sudoku</h1>
+        <hr/>
+        <h2 id="strikes">0</h2>
+
+        <!-- sudoku board 9x9 -->
+        <div id="sudoku-container"> 
+            <div id="sudoku-board">
+                <!-- 81 sudoku cells built here -->
+                <audio id="dingSound" src="sounds/ding.wav"></audio>
+                <audio id="oopsSound" src="sounds/oops.wav"></audio>
+            </div>
+        </div>
+       
+        <br/>
+        <div id="nums">
+            <!-- row of 1-9 built here -->
+            <audio id="clickSound" src="sounds/click.wav"></audio>
+        </div>
+        <div id="game-controls">
+                <div class="control-btn" id="undoBtn">undo</div>
+                <div class="control-btn" id="hintBtn">hint</div>
+                <div class="control-btn" id="solveBtn">solve</div>
+                <audio id="controlSound" src="sounds/space.wav"></audio>
+        </div>
+    </body>
+</html>
