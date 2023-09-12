@@ -141,7 +141,6 @@ const undoBtn = document.getElementById("undoBtn");
 const hintBtn = document.getElementById("hintBtn");
 const solveBtn = document.getElementById("solveBtn");
 
-undoBtn.addEventListener("click", clickControl);
 hintBtn.addEventListener("click", clickControl);
 solveBtn.addEventListener("click", clickControl);
 
@@ -152,6 +151,24 @@ function clickControl() {
     controlSound.play();
 }
 
+undoBtn.addEventListener("click", clickControl);
+undoBtn.addEventListener("click", undo);
+
+//saving moves to array
+let moveHx = []; //storing moves
+function saveMove(cell, prevContent) {
+    moveHx.push({cell, prevContent});
+    console.log(moveHx);
+}
+
+function undo() {
+    if (moveHx.length > 0) {
+        var lastMove = moveHx.pop();
+
+        lastMove.cell.innerText = lastMove.prevContent;
+        lastMove.cell.classList.remove("cell-error");
+    }
+}
 
 
 
