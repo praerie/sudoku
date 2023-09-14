@@ -13,8 +13,7 @@ const prefilled = [
     "7-3-18---",
 ];
 
-
-var solution = [
+const solution = [
     "435269781",
     "682571493",
     "197834562",
@@ -31,22 +30,22 @@ globalThis.onload = function() {
 }
 
 function setGame() {
-    //building sudoku board
+    //build sudoku board
     for (let row=0; row<9; row++) {
         for (let col=0; col<9; col++) {
-            //creating cells
+            //creat cells
             let cell = document.createElement("div");
             cell.id = row.toString() + "," + col.toString();
             cell.classList.add("sudoku-cell");
             document.getElementById("sudoku-board").append(cell);
 
-            //filling in numbers with premade board array
+            //fill in numbers with premade board array
             if (prefilled[row][col] != "-") {
                 cell.innerText = prefilled[row][col]
                 cell.classList.add("cell-prefilled");
             }
 
-            //creating dividers
+            //create dividers
             if (row == 2 || row == 5) {
                 cell.classList.add("horizontal-divider");
             }
@@ -54,32 +53,32 @@ function setGame() {
                 cell.classList.add("vertical-divider");
             }
 
-            //listening for clicks
+            //listen for sudoku cell clicks
             cell.addEventListener("click", clickCell);            
         }
     }
 
-    //building num row below board
+    //build num row below board
     for (let i=1; i<=9; i++) {
-        //creating num tiles
+        //create num tiles
         let num = document.createElement("div");
         num.id = i;
         num.innerText = i;
         num.classList.add("num-tile");
         document.getElementById("nums").append(num);
 
-        //listening for clicks
+        //listen for clicks
         num.addEventListener("click", clickNum);
     }
 }
 
-//updating color of clicked num
+//update color of clicked num
 function clickNum() {
-    //checking for double click
+    //check for double click
     if (numClicked === this) {
         numClicked.classList.remove("num-clicked");
         numClicked = null;
-    } else { //if other num already clicked, removing class
+    } else { //if other num already clicked, remove class
         if (numClicked != null) {
             numClicked.classList.remove("num-clicked");
         }
@@ -87,33 +86,33 @@ function clickNum() {
         numClicked = this;
         numClicked.classList.add("num-clicked");
     }
-    //playing click sound
+    //play click sound
     const clickSound = document.getElementById("clickSound");
     clickSound.currentTime = 0; 
     clickSound.volume = 0.7;
     clickSound.play();
 }
 
-//updating sudoku cell with clicked num
+//update sudoku cell with clicked num
 function clickCell() {
     var prevContent = this.innerText;
     var prevClass = this.className;
 
     if (numClicked) {
-        //avoiding cell override
+        //check if cell is filled to avoid cell override
         if (this.innerText != "") {
             return;
         }
 
-        //checking against solution array
+        //check against solution array
         let pos = this.id.split(",");
         let x = parseInt(pos[0]);
         let y = parseInt(pos[1]);
-                    //checking if good choice
+                    //check if good choice
         if (solution[x][y] == numClicked.id) {
             this.innerText = numClicked.id;
 
-            //playing ding sound
+            //play ding sound
             const dingSound = document.getElementById("dingSound");
             dingSound.volume = 0.5;
             dingSound.currentTime = 0; 
@@ -124,10 +123,10 @@ function clickCell() {
             this.innerText = numClicked.id;
             this.classList.add("cell-error");
 
-            //recording move in history
+            //record move in history
             saveMove(this, prevContent, prevClass);
 
-            //playing oops sound
+            //play oops sound
             const oopsSound = document.getElementById("oopsSound");
             oopsSound.volume = 0.3;
             oopsSound.currentTime = 0; 
@@ -136,7 +135,7 @@ function clickCell() {
     }
 }
 
-//playing game control button sounds 
+//play game control button sounds 
 const undoBtn = document.getElementById("undoBtn");
 const hintBtn = document.getElementById("hintBtn");
 const solveBtn = document.getElementById("solveBtn");
@@ -154,8 +153,8 @@ function clickControl() {
 undoBtn.addEventListener("click", clickControl);
 undoBtn.addEventListener("click", undo);
 
-//saving moves to array
-let moveHx = []; //storing moves
+//save moves to array
+let moveHx = []; 
 function saveMove(cell, prevContent) {
     moveHx.push({cell, prevContent});
     console.log(moveHx);
