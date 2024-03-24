@@ -1,77 +1,122 @@
 let strikes = 0;
 let numClicked;
+let board;
 
-const prefilled = [
-    "---26-7-1",
-    "68--7--9-",
-    "19---45--",
-    "82-1---4-",
-    "--46-29--",
-    "-5---3-28",
-    "--93---74",
-    "-4--5--36",
-    "7-3-18---",
-];
+// const prefilled = [
+//     "---26-7-1",
+//     "68--7--9-",
+//     "19---45--",
+//     "82-1---4-",
+//     "--46-29--",
+//     "-5---3-28",
+//     "--93---74",
+//     "-4--5--36",
+//     "7-3-18---",
+// ];
 
-const solution = [
-    "435269781",
-    "682571493",
-    "197834562",
-    "826195347",
-    "374682915",
-    "951743628",
-    "519326874",
-    "248957136",
-    "763418259",
-]
+// const solution = [
+//     "435269781",
+//     "682571493",
+//     "197834562",
+//     "826195347",
+//     "374682915",
+//     "951743628",
+//     "519326874",
+//     "248957136",
+//     "763418259",
+// ]
 
-globalThis.onload = function() {
-    setGame();
+function generatePuzzle() {
+
 }
 
-function setGame() {
-    //build sudoku board
-    for (let row=0; row<9; row++) {
-        for (let col=0; col<9; col++) {
-            //create cells
-            let cell = document.createElement("div");
-            cell.id = row.toString() + "," + col.toString();
-            cell.classList.add("sudoku-cell");
-            document.getElementById("sudoku-board").append(cell);
+function solvePuzzle() {
 
-            //fill in numbers with premade board array
-            if (prefilled[row][col] != "-") {
-                cell.innerText = prefilled[row][col]
-                cell.classList.add("cell-prefilled");
-            }
+}
 
-            //create dividers
-            if (row == 2 || row == 5) {
-                cell.classList.add("horizontal-divider");
-            }
-            if (col == 2 || col == 5) {
-                cell.classList.add("vertical-divider");
-            }
-
-            //listen for sudoku cell clicks
-            cell.addEventListener("click", clickCell);            
+function isValid() {
+    // check if number already exists in row
+    for (let i = 0; i < 9; i++) {
+        if (board[row][i] === num) {
+            return false;
         }
     }
 
-    //build num row below board
-    for (let i=1; i<=9; i++) {
-        //create num tiles
-        let num = document.createElement("div");
-        num.id = i;
-        num.innerText = i;
-        num.classList.add("num-tile");
-        document.getElementById("nums").append(num);
-
-        //listen for clicks
-        num.addEventListener("click", clickNum);
+    // check if number already exists in column
+    for (let i = 0; i < 9; i++) {
+        if (board[i][col] === num) {
+            return false;
+        }
     }
+
+    // check if number already exists in 3x3 subgrid
+    const startRow = Math.floor(row / 3) * 3;
+    const startCol = Math.floor(col / 3) * 3;
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            if (board[startRow + i][startCol + j] === num) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
+function setGame() {
+    const board = generateSudoku();
+    displaySudoku(board);
+}
+
+function displaySudoku(board) {
+    
+}
+
+// //old fx using prefilled arrays
+// function setGame() {
+//     //build sudoku board
+//     for (let row=0; row<9; row++) {
+//         for (let col=0; col<9; col++) {
+//             //create cells
+//             let cell = document.createElement("div");
+//             cell.id = row.toString() + "," + col.toString();
+//             cell.classList.add("sudoku-cell");
+//             document.getElementById("sudoku-board").append(cell);
+
+//             //fill in numbers with premade board array
+//             if (prefilled[row][col] != "-") {
+//                 cell.innerText = prefilled[row][col]
+//                 cell.classList.add("cell-prefilled");
+//             }
+
+//             //create dividers
+//             if (row == 2 || row == 5) {
+//                 cell.classList.add("horizontal-divider");
+//             }
+//             if (col == 2 || col == 5) {
+//                 cell.classList.add("vertical-divider");
+//             }
+
+//             //listen for sudoku cell clicks
+//             cell.addEventListener("click", clickCell);            
+//         }
+//     }
+
+//     //build num row below board
+//     for (let i=1; i<=9; i++) {
+//         //create num tiles
+//         let num = document.createElement("div");
+//         num.id = i;
+//         num.innerText = i;
+//         num.classList.add("num-tile");
+//         document.getElementById("nums").append(num);
+
+//         //listen for clicks
+//         num.addEventListener("click", clickNum);
+//     }
+// }
+
+//needs to be adjusted to work with the new architecture
 //update color of clicked num
 function clickNum() {
     //check for double click
@@ -93,6 +138,7 @@ function clickNum() {
     clickSound.play();
 }
 
+//needs to be adjusted to work with the new architecture
 //update sudoku cell with clicked num
 function clickCell() {
     var prevContent = this.innerText;
@@ -169,6 +215,8 @@ function undo() {
     }
 }
 
-
+globalThis.onload = function() {
+    setGame();
+}
 
 
