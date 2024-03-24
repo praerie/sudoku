@@ -46,9 +46,9 @@ function generatePuzzleRecursive(row, col) {
 
             //recursively try filling next cell
             if (generatePuzzleRecursive(nextRow, nextCol)) {
-                return true; //if solution found return true
+                return true; //if solution found, return true
             }
-            //otherwise, if no solution found, backtrack and try next num
+            //otherwise, if no solution found, backtrack and try next
             board[row][col] = 0;
         }
     }
@@ -192,8 +192,7 @@ function styleClickedNum() {
     clickSound.play();
 }
 
-//needs to be adjusted to work with the new architecture
-//update sudoku cell with clicked num
+//validate input and update board 
 function clickCell() {
     let prevContent = this.innerText;
     let prevClass = this.className;
@@ -203,12 +202,12 @@ function clickCell() {
             return;
         }
 
-        //check against solution array
+        //validate input against solved board
         let pos = this.id.split(",");
         let x = parseInt(pos[0]);
         let y = parseInt(pos[1]);
                     
-        if (solution[x][y] == numClicked.id) { //check if good choice
+        if (board[x][y] == numClicked.id) { //check if good choice
             this.innerText = numClicked.id;
 
             //play ding sound
@@ -216,7 +215,7 @@ function clickCell() {
             dingSound.volume = 0.5;
             dingSound.currentTime = 0; 
             dingSound.play();
-        } else {    //otherwise, bad choice
+        } else { //otherwise, bad choice
             strikes += 1;
             document.getElementById("strikes").innerText = strikes;
             this.innerText = numClicked.id;
@@ -234,11 +233,10 @@ function clickCell() {
     }
 }
 
-//save moves to array
+//save moves to array, allows 'undo' in order
 let moveHx = []; 
 function saveMove(cell, prevContent) {
     moveHx.push({cell, prevContent});
-    console.log(moveHx);
 }
 
 //undo incorrect moves
@@ -275,11 +273,7 @@ document.addEventListener("DOMContentLoaded", function() {
 //generate and display puzzle
 function setGame() {
     board = generatePuzzle();
-    if (board) { 
-        displaySudoku(board);
-    } else {
-        console.error("Failed to generate Sudoku puzzle.");
-    }
+    displaySudoku(board);
 }
 
 globalThis.onload = function() {
