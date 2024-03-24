@@ -33,7 +33,7 @@ function setGame() {
     //build sudoku board
     for (let row=0; row<9; row++) {
         for (let col=0; col<9; col++) {
-            //creat cells
+            //create cells
             let cell = document.createElement("div");
             cell.id = row.toString() + "," + col.toString();
             cell.classList.add("sudoku-cell");
