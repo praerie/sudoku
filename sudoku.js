@@ -27,7 +27,52 @@ let board;
 // ]
 
 function generatePuzzle() {
+    //create empty 9x9 puzzle
+    board = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0));
+        //outer Array.from() creates 9 rows;
+        //for each row, inner Array.from() creates 9 columns within each row
+    
+    //fill the board
+    generatePuzzleRecursive();
 
+    //remove some numbers to create starting puzzle
+    hideNumbers();
+}
+
+generatePuzzleRecursive() {
+    //base case: if all cells filled, return true
+    if (row === 9) {
+        return true;
+    }
+
+    //determining current row and current col
+    //if at end of row or col, iterate to next, otherwise same
+    const currRow = (col === 8) ? row + 1 : row;
+    const currCol = (col === 8) ? 0 : col + 1;
+
+    //if current cell is filled, move to next cell
+    if (board[row][col] !== 0) {
+        return generatePuzzleRecursive(currRow, currCol);
+    }
+
+    //try filling current cell with random number
+    const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    shuffle(nums); 
+    for (const num of nums) {
+        if (isValid(row, col, num)) { //check if valid in cell
+            board[row][col] = num; //place in cell
+
+            //recursively try filling next cell
+            if (generatePuzzleRecursive(currRow, currCol)) {
+                return true; //if solution found return true
+            }
+            //otherwise, if no solution found, backtrack and try the next num
+            board[row][col] = 0;
+        }
+    }
+
+    //if no num leads to valid solution, return false (backtrack)
+    return false;
 }
 
 function solvePuzzle() {
@@ -35,21 +80,21 @@ function solvePuzzle() {
 }
 
 function isValid() {
-    // check if number already exists in row
+    //check if number already exists in row
     for (let i = 0; i < 9; i++) {
         if (board[row][i] === num) {
             return false;
         }
     }
 
-    // check if number already exists in column
+    //check if number already exists in column
     for (let i = 0; i < 9; i++) {
         if (board[i][col] === num) {
             return false;
         }
     }
 
-    // check if number already exists in 3x3 subgrid
+    //check if number already exists in 3x3 subgrid
     const startRow = Math.floor(row / 3) * 3;
     const startCol = Math.floor(col / 3) * 3;
     for (let i = 0; i < 3; i++) {
@@ -69,7 +114,19 @@ function setGame() {
 }
 
 function displaySudoku(board) {
-    
+    for (let row=0; row<9; row++) {
+        for (let col=0; col<9; col++) {
+            const cell = document.getElementById(row.toString() + "," + col.toString());
+            cell.innerText = board[row][col]; 
+        }
+    }
+}
+
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
 }
 
 // //old fx using prefilled arrays
