@@ -33,13 +33,19 @@ function generatePuzzle() {
         //for each row, inner Array.from() creates 9 columns within each row
     
     //fill the board
-    generatePuzzleRecursive();
+    let row = 0;
+    let col = 0;
+    if (generatePuzzleRecursive(row, col)) {
+        return board; //return valid puzzle
+    } else {
+        return null; //failure to generate
+    }
 
     //remove some numbers to create starting puzzle
     hideNumbers();
 }
 
-generatePuzzleRecursive() {
+function generatePuzzleRecursive(row, col) {
     //base case: if all cells filled, return true
     if (row === 9) {
         return true;
@@ -47,26 +53,26 @@ generatePuzzleRecursive() {
 
     //determining current row and current col
     //if at end of row or col, iterate to next, otherwise same
-    const currRow = (col === 8) ? row + 1 : row;
-    const currCol = (col === 8) ? 0 : col + 1;
+    const nextRow = (col === 8) ? row + 1 : row;
+    const nextCol = (col === 8) ? 0 : col + 1;
 
     //if current cell is filled, move to next cell
     if (board[row][col] !== 0) {
-        return generatePuzzleRecursive(currRow, currCol);
+        return generatePuzzleRecursive(nextRow, nextCol);
     }
 
     //try filling current cell with random number
     const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-    shuffle(nums); 
+    shuffle(nums); //to ensure unique puzzles
     for (const num of nums) {
         if (isValid(row, col, num)) { //check if valid in cell
             board[row][col] = num; //place in cell
 
             //recursively try filling next cell
-            if (generatePuzzleRecursive(currRow, currCol)) {
+            if (generatePuzzleRecursive(nextRow, nextCol)) {
                 return true; //if solution found return true
             }
-            //otherwise, if no solution found, backtrack and try the next num
+            //otherwise, if no solution found, backtrack and try next num
             board[row][col] = 0;
         }
     }
@@ -79,7 +85,7 @@ function solvePuzzle() {
 
 }
 
-function isValid() {
+function isValid(row, col, num) {
     //check if number already exists in row
     for (let i = 0; i < 9; i++) {
         if (board[row][i] === num) {
@@ -109,16 +115,51 @@ function isValid() {
 }
 
 function setGame() {
-    const board = generateSudoku();
-    displaySudoku(board);
+    board = generatePuzzle();
+    if (board) { //check if successfully generated
+        displaySudoku(board);
+    } else {
+        console.error("Failed to generate Sudoku puzzle.");
+    }
 }
 
-function displaySudoku(board) {
+function displaySudoku() {
+    const sudokuBoard = document.getElementById("sudoku-board");
+
     for (let row=0; row<9; row++) {
         for (let col=0; col<9; col++) {
-            const cell = document.getElementById(row.toString() + "," + col.toString());
-            cell.innerText = board[row][col]; 
+            //determine cell index
+            const cellId = row.toString() + "," + col.toString();
+
+            //create cell
+            let cell = document.createElement("div");
+            cell.id = cellId;
+            cell.classList.add("sudoku-cell");
+
+            //set cell value from global board array
+            cell.innerText = board[row][col] !== 0 ? board[row][col] : '';
+            sudokuBoard.append(cell);
+
+            //create dividers
+            if (row == 2 || row == 5) {
+                cell.classList.add("horizontal-divider");
+            }
+            if (col == 2 || col == 5) {
+                cell.classList.add("vertical-divider");
+            }
+
+            cell.addEventListener("click", clickCell);   
         }
+    }
+
+    for (let i=1; i<=9; i++) {
+        //create num tiles
+        let numTile = document.createElement("div");
+        numTile.id = i;
+        numTile.innerText = i;
+        numTile.classList.add("num-tile");
+        document.getElementById("nums").append(numTile);
+        numTile.addEventListener("click", clickNum);
     }
 }
 
@@ -241,10 +282,8 @@ function clickCell() {
 //play game control button sounds 
 const undoBtn = document.getElementById("undoBtn");
 const hintBtn = document.getElementById("hintBtn");
+const generateBtn = document.getElementById("generateBtn");
 const solveBtn = document.getElementById("solveBtn");
-
-hintBtn.addEventListener("click", clickControl);
-solveBtn.addEventListener("click", clickControl);
 
 function clickControl() {
     const controlSound = document.getElementById("controlSound");
@@ -252,9 +291,6 @@ function clickControl() {
     controlSound.currentTime = 0; 
     controlSound.play();
 }
-
-undoBtn.addEventListener("click", clickControl);
-undoBtn.addEventListener("click", undo);
 
 //save moves to array
 let moveHx = []; 
@@ -271,6 +307,14 @@ function undo() {
         lastMove.cell.classList.remove("cell-error");
     }
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    undoBtn.addEventListener("click", clickControl);
+    undoBtn.addEventListener("click", undo);
+    hintBtn.addEventListener("click", clickControl);
+    generateBtn.addEventListener("click", clickControl);
+    solveBtn.addEventListener("click", clickControl);
+});
 
 globalThis.onload = function() {
     setGame();
