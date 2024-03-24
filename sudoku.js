@@ -2,30 +2,6 @@ let strikes = 0;
 let numClicked;
 let board;
 
-// const prefilled = [
-//     "---26-7-1",
-//     "68--7--9-",
-//     "19---45--",
-//     "82-1---4-",
-//     "--46-29--",
-//     "-5---3-28",
-//     "--93---74",
-//     "-4--5--36",
-//     "7-3-18---",
-// ];
-
-// const solution = [
-//     "435269781",
-//     "682571493",
-//     "197834562",
-//     "826195347",
-//     "374682915",
-//     "951743628",
-//     "519326874",
-//     "248957136",
-//     "763418259",
-// ]
-
 function generatePuzzle() {
     //create empty 9x9 puzzle
     board = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0));
@@ -81,8 +57,41 @@ function generatePuzzleRecursive(row, col) {
     return false;
 }
 
-function solvePuzzle() {
+function hideNumbers() {
+/* 
+    logic:
+    - start with completed puzzle created thru backtracking
+    - determine difficulty level, influencing how many numbers to hide 
+    - iterate thru cells of sudoku grid
+        - for each cell, randomly decide whether to hide it based on difficulty level
+          (probability distribution)
+            - if deciding to hide it, replace with ''
+    - ensure solvability with unique solution (solving algorithm)
+        - if there are multiple solutions, adjust number of hidden cells or revert last hidden cell and try again
+    - repeat until desired number of cells matches difficulty level
 
+    pseudocode:
+    difficultyLevel = determineDifficultyLevel() 
+    cellsToHide = determineHiddenCells(difficultyLevel) 
+
+    hiddenCellsCount = 0 
+
+    while hiddenCellsCount < cellsToHide:
+        // iterate through the cells of the Sudoku grid
+        for each cell in board:
+            if randomlyDecideToHide(difficultyLevel): 
+                cell.value = '' 
+                hiddenCellsCount += 1 
+
+        if not isSolvableWithUniqueSolution(board): 
+            resetLastHiddenCell() 
+            hiddenCellsCount -= 1 
+
+    return board
+*/
+}
+
+function solvePuzzle() {
 }
 
 function isValid(row, col, num) {
@@ -112,15 +121,6 @@ function isValid(row, col, num) {
     }
 
     return true;
-}
-
-function setGame() {
-    board = generatePuzzle();
-    if (board) { //check if successfully generated
-        displaySudoku(board);
-    } else {
-        console.error("Failed to generate Sudoku puzzle.");
-    }
 }
 
 function displaySudoku() {
@@ -234,7 +234,24 @@ function clickCell() {
     }
 }
 
-//play game control button sounds 
+//save moves to array
+let moveHx = []; 
+function saveMove(cell, prevContent) {
+    moveHx.push({cell, prevContent});
+    console.log(moveHx);
+}
+
+//undo incorrect moves
+function undo() {
+    if (moveHx.length > 0) {
+        let lastMove = moveHx.pop();
+
+        lastMove.cell.innerText = lastMove.prevContent;
+        lastMove.cell.classList.remove("cell-error");
+    }
+}
+
+//game control button sounds and listeners
 const undoBtn = document.getElementById("undoBtn");
 const hintBtn = document.getElementById("hintBtn");
 const generateBtn = document.getElementById("generateBtn");
@@ -247,22 +264,6 @@ function clickControl() {
     controlSound.play();
 }
 
-//save moves to array
-let moveHx = []; 
-function saveMove(cell, prevContent) {
-    moveHx.push({cell, prevContent});
-    console.log(moveHx);
-}
-
-function undo() {
-    if (moveHx.length > 0) {
-        let lastMove = moveHx.pop();
-
-        lastMove.cell.innerText = lastMove.prevContent;
-        lastMove.cell.classList.remove("cell-error");
-    }
-}
-
 document.addEventListener("DOMContentLoaded", function() {
     undoBtn.addEventListener("click", clickControl);
     undoBtn.addEventListener("click", undo);
@@ -270,6 +271,16 @@ document.addEventListener("DOMContentLoaded", function() {
     generateBtn.addEventListener("click", clickControl);
     solveBtn.addEventListener("click", clickControl);
 });
+
+//generate and display puzzle
+function setGame() {
+    board = generatePuzzle();
+    if (board) { 
+        displaySudoku(board);
+    } else {
+        console.error("Failed to generate Sudoku puzzle.");
+    }
+}
 
 globalThis.onload = function() {
     setGame();
