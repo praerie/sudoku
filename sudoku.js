@@ -81,6 +81,7 @@ function hideNumbers() {
             hiddenCells += 1;
         }
 
+        //need to ensure that max clusters not exceeded
         //need to check that there is only 1 solution
     }
 }
@@ -288,6 +289,7 @@ function clickCell() {
                     
         if (boardSolution[row][col] == numClicked.id) { //check if good choice
             this.innerText = numClicked.id;
+            this.classList.add("user-entered");
 
             //play ding sound
             const dingSound = document.getElementById("dingSound");
