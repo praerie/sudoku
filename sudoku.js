@@ -56,7 +56,7 @@ function generatePuzzleRecursive(row, col) {
 }
 
 function hideNumbers() {
-    const difficulty = "easy"; //to-do: add difficulty buttons to interface
+    const difficulty = "hard"; //to-do: add difficulty buttons to interface
     const cellsToHide = setHiddenCells(difficulty);
     //maxCluster = setMaxCluster(difficulty);
 
@@ -71,19 +71,14 @@ function hideNumbers() {
 
     shuffle(cellCoords); //randomizes cell hiding
 
-    for (const [row, col] of cellCoords) {
-        if (hiddenCells >= cellsToHide) {
-            break; 
-        }
-        
-        if (Math.random() > 0.5) {
-            board[row][col] = "";
-            hiddenCells += 1;
-        }
-
-        //need to ensure that max clusters not exceeded
-        //need to check that there is only 1 solution
+    for (let i=0; i<cellsToHide; i++) {
+        const [row, col] = cellCoords[i];
+        board[row][col] = "";
+        hiddenCells += 1;
     }
+
+    //need to ensure that max clusters not exceeded
+    //need to check that there is only 1 solution
 }
 
 function setHiddenCells(level) {
