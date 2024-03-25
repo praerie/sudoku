@@ -1,6 +1,5 @@
 let strikes = 0;
-let numClicked;
-let board;
+let numClicked, board, boardSolution;
 
 function generatePuzzle() {
     //create empty 9x9 puzzle
@@ -11,14 +10,13 @@ function generatePuzzle() {
     //fill the board
     let row = 0;
     let col = 0;
-    if (generatePuzzleRecursive(row, col)) {
-        return board; //return valid puzzle
+    if (generatePuzzleRecursive(row, col)) { //if valid puzzle
+        boardSolution = board; //save copy of solution
+        hideNumbers(); //remove numbers to create starting puzzle
+        return board;
     } else {
-        return null; //failure to generate
+        return null; 
     }
-
-    //remove some numbers to create starting puzzle
-    hideNumbers();
 }
 
 function generatePuzzleRecursive(row, col) {
@@ -62,6 +60,9 @@ function hideNumbers() {
     logic:
     - start with completed puzzle created thru backtracking
     - determine difficulty level, influencing how many numbers to hide 
+        - easy: 40 hidden
+        - medium: 50 hidden
+        - hard: 60 hidden
     - iterate thru cells of sudoku grid
         - for each cell, randomly decide whether to hide it based on difficulty level
           (probability distribution)
@@ -83,15 +84,45 @@ function hideNumbers() {
                 cell.value = '' 
                 hiddenCellsCount += 1 
 
-        if not isSolvableWithUniqueSolution(board): 
-            resetLastHiddenCell() 
-            hiddenCellsCount -= 1 
+            if not isSolvableWithUniqueSolution(boardSolution): 
+                resetLastHiddenCell() 
+                hiddenCellsCount -= 1 
 
     return board
 */
+    difficulty = "easy"; //to-do: add difficulty buttons to interface
+    cellsToHide = determineHiddenCells(difficulty);
+
+    hiddenCells = 0;
+
+    while (hiddenCells < cellsToHide) {
+        for (let i=0; i<9; i++) {
+            for (let j=0; j<9; j++) {
+                if (randomlyHide(difficulty)) {
+                    board[i][j] = "";
+                    hiddenCells += 1;
+                }
+
+                if (!uniquelySolvable()) {
+                    board[i][j] = boardSolution[i][j];
+                    hiddenCells -= 1;
+                }
+            }
+        }
+    }
 }
 
-function solvePuzzle() {
+function determineHiddenCells(level) {
+    switch(level) {
+        case "easy": 
+            return 40;
+        case "medium":
+            return 50;
+        case "hard":
+            return 60;
+        default:
+            return 40;
+    }   
 }
 
 function isValid(row, col, num) {
