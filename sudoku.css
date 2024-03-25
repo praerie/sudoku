@@ -34,7 +34,7 @@ hr {
 .sudoku-cell {
     width: 60px;
     height: 60px; 
-    color: teal;
+    color: #444;
     border: 1px solid seashell;
     background-color: linen;
     font-size: 26px;
@@ -49,9 +49,9 @@ hr {
     background-color: aliceblue;
 }
 
-.cell-prefilled {
+.user-entered {
     background-color: antiquewhite;
-    color: #444;
+    color: teal;
 }
 
 .cell-error {
