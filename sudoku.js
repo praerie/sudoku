@@ -1,6 +1,5 @@
 let strikes = 0;
-let numClicked;
-let board;
+let numClicked, board, boardSolution;
 
 function generatePuzzle() {
     //create empty 9x9 puzzle
@@ -11,14 +10,13 @@ function generatePuzzle() {
     //fill the board
     let row = 0;
     let col = 0;
-    if (generatePuzzleRecursive(row, col)) {
-        return board; //return valid puzzle
+    if (generatePuzzleRecursive(row, col)) { //if valid puzzle
+        boardSolution = board.map(row => row.slice()); //save copy of solution
+        hideNumbers(); //remove numbers to create starting puzzle
+        return board;
     } else {
-        return null; //failure to generate
+        return null; 
     }
-
-    //remove some numbers to create starting puzzle
-    hideNumbers();
 }
 
 function generatePuzzleRecursive(row, col) {
@@ -58,40 +56,121 @@ function generatePuzzleRecursive(row, col) {
 }
 
 function hideNumbers() {
-/* 
-    logic:
-    - start with completed puzzle created thru backtracking
-    - determine difficulty level, influencing how many numbers to hide 
-    - iterate thru cells of sudoku grid
-        - for each cell, randomly decide whether to hide it based on difficulty level
-          (probability distribution)
-            - if deciding to hide it, replace with ''
-    - ensure solvability with unique solution (solving algorithm)
-        - if there are multiple solutions, adjust number of hidden cells or revert last hidden cell and try again
-    - repeat until desired number of cells matches difficulty level
+    const difficulty = "easy"; //to-do: add difficulty buttons to interface
+    const cellsToHide = setHiddenCells(difficulty);
+    //maxCluster = setMaxCluster(difficulty);
 
-    pseudocode:
-    difficultyLevel = determineDifficultyLevel() 
-    cellsToHide = determineHiddenCells(difficultyLevel) 
+    let hiddenCells = 0;
 
-    hiddenCellsCount = 0 
+    const cellCoords = [];
+    for (let i=0; i<9; i++) {
+        for (let j=0; j<9; j++) {
+            cellCoords.push([i, j]);
+        }
+    }
 
-    while hiddenCellsCount < cellsToHide:
-        // iterate through the cells of the Sudoku grid
-        for each cell in board:
-            if randomlyDecideToHide(difficultyLevel): 
-                cell.value = '' 
-                hiddenCellsCount += 1 
+    shuffle(cellCoords); //randomizes cell hiding
 
-        if not isSolvableWithUniqueSolution(board): 
-            resetLastHiddenCell() 
-            hiddenCellsCount -= 1 
+    for (const [row, col] of cellCoords) {
+        if (hiddenCells >= cellsToHide) {
+            break; 
+        }
+        
+        if (Math.random() > 0.5) {
+            board[row][col] = "";
+            hiddenCells += 1;
+        }
 
-    return board
-*/
+        //need to check that there is only 1 solution
+    }
 }
 
-function solvePuzzle() {
+function setHiddenCells(level) {
+    switch(level) {
+        case "easy": 
+            return 40;
+        case "medium":
+            return 50;
+        case "hard":
+            return 60;
+        default:
+            return 40;
+    }   
+}
+
+/*
+function setMaxCluster(level) {
+    switch(level) {
+        case "easy":
+            return 7;
+        case "medium":
+            return 6;
+        case "hard":
+            return 5;
+        default:
+            return 7;
+    }
+}
+
+function clusterAllowed(row, col, max) {
+    //checking cluster count in 3x3 grid
+
+    //checking cluster count in row
+    
+    //checking cluster count in col
+}
+*/
+
+function uniquelySolvable(row, col) {
+    //check if hiding cell at row, col results in uniquely solvable puzzle
+
+    const boardCopy = board.map(row => row.slice());
+
+    boardCopy[row][col] = ""; 
+
+    let solutions = 0;
+    solvePuzzle(boardCopy, () => {
+        solutions++;
+    });
+    
+    return solutions === 1; //if 1 solution, returns true
+}
+
+function solvePuzzle(boardToSolve) {
+    let emptyCell = findEmptyCell();
+    if (!emptyCell) {
+        return true; //no empty cells, board solved
+    }
+
+    let [row, col] = emptyCell;
+
+    for (let num = 1; num <= 9; num++) {
+        if (isValid(row, col, num)) {
+            //try placing num in the empty cell
+            boardToSolve[row][col] = num;
+
+            //recursively try to solve the updated board
+            if (solvePuzzle()) {
+                return true; //solution found
+            }
+
+            //backtrack if placing num didn't lead to a solution
+            boardToSolve[row][col] = 0;
+        }
+    }
+
+    return false; //no solution found
+}
+
+function findEmptyCell() {
+    for (let i=0; i<9; i++) {
+        for (let j=0; j<9; j++) {
+            if (board[i][j] === "") {
+                return [i, j]; //return the coordinates of the empty cell
+            }
+        }
+    }
+    return null; 
 }
 
 function isValid(row, col, num) {
@@ -204,10 +283,10 @@ function clickCell() {
 
         //validate input against solved board
         let pos = this.id.split(",");
-        let x = parseInt(pos[0]);
-        let y = parseInt(pos[1]);
+        let row = parseInt(pos[0]);
+        let col = parseInt(pos[1]);
                     
-        if (board[x][y] == numClicked.id) { //check if good choice
+        if (boardSolution[row][col] == numClicked.id) { //check if good choice
             this.innerText = numClicked.id;
 
             //play ding sound
@@ -233,13 +312,13 @@ function clickCell() {
     }
 }
 
-//save moves to array, allows 'undo' in order
+//save moves to array, allows 'undo' 
 let moveHx = []; 
 function saveMove(cell, prevContent) {
     moveHx.push({cell, prevContent});
 }
 
-//undo incorrect moves
+//undo incorrect moves in reverse order
 function undo() {
     if (moveHx.length > 0) {
         let lastMove = moveHx.pop();
