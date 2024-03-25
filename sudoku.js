@@ -95,21 +95,21 @@ function solvePuzzle() {
 }
 
 function isValid(row, col, num) {
-    //check if number already exists in row
+    //rules out horizontal match (row)
     for (let i = 0; i < 9; i++) {
         if (board[row][i] === num) {
             return false;
         }
     }
 
-    //check if number already exists in column
+    //rules out vertical match (column)
     for (let i = 0; i < 9; i++) {
         if (board[i][col] === num) {
             return false;
         }
     }
 
-    //check if number already exists in 3x3 subgrid
+    //rules out match in 3x3 subgrid
     const startRow = Math.floor(row / 3) * 3;
     const startCol = Math.floor(col / 3) * 3;
     for (let i = 0; i < 3; i++) {
