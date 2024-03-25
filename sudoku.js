@@ -125,6 +125,20 @@ function determineHiddenCells(level) {
     }   
 }
 
+function randomlyHide(level) {
+    /*
+    brainstorming:
+    - generate random boolean, hide or keep visible 
+        - Math.random() for number 0 to 1, then convert to boolean using randomBool = randomNum < 0.5 
+    - smaller clusters as difficulty level increases
+        - in addition to randomization, need to check within col, row, and 3x3 grid to avoid clusters
+    */
+}
+
+function uniquelySolvable() {
+
+}
+
 function isValid(row, col, num) {
     //check if number already exists in row
     for (let i = 0; i < 9; i++) {
