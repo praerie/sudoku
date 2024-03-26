@@ -39,7 +39,7 @@ function generatePuzzleRecursive(row, col) {
     const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9];
     shuffle(nums); //to ensure unique puzzles
     for (const num of nums) {
-        if (isValid(row, col, num)) { //check if valid in cell
+        if (isValid(row, col, num, board)) { //check if valid in cell
             board[row][col] = num; //place in cell
 
             //recursively try filling next cell
@@ -58,9 +58,6 @@ function generatePuzzleRecursive(row, col) {
 function hideNumbers() {
     const difficulty = "easy"; //to-do: add difficulty buttons to interface
     const cellsToHide = setHiddenCells(difficulty);
-    //maxCluster = setMaxCluster(difficulty);
-
-    let hiddenCells = 0;
 
     const cellCoords = [];
     for (let i=0; i<9; i++) {
@@ -72,21 +69,56 @@ function hideNumbers() {
     
     let goodVisibility = false;
 
-    while (goodVisibility == false) {
+    while (!goodVisibility) {
+        let hiddenCells = 0;
+
+        //hide cells: iterates thru shuffled coords, hiding specified cellsToHide amt 
         for (let i=0; i<cellsToHide; i++) {
             const [row, col] = cellCoords[i];
             board[row][col] = "";
             hiddenCells += 1;
         }
 
-        //if every cell in row !empty = redo hiding
-        //if else every cell in column !empty = redo hiding
-        //if else every cell in 3x3 grid !empty = redo hiding
-        //else goodVisibility = true
+        let rowValid = true,
+            colValid = true,
+            gridValid = true;
 
-        //once visibility is good, need to check that there is only 1 solution
-        //call uniquelySolvable
-    }
+        //checking if any row, col, or 3x3 grid is fully visible
+        for (let i=0; i<9; i++) {
+            //checking row visibility
+            if (!board[i].some(cell => cell === "")) {
+                rowValid = false;
+            }
+            
+            //checking column visibility
+            const column = board.map(row => row[i]);
+            if (!column.some(cell => cell === "")) {
+                colValid = false;
+            }
+
+            //checking 3x3 grid visibility
+            const startRow = Math.floor(i / 3) * 3;
+            const startCol = (i % 3) * 3;
+            const gridCells = [];
+            for (let j=startRow; j<startRow + 3; j++) {
+                for (let k=startCol; k<startCol + 3; k++) {
+                    gridCells.push(board[j][k]);
+                }
+            }
+            if (!gridCells.some(cell => cell === "")) {
+                gridValid = false;
+            }
+        }
+
+        if (rowValid && colValid && gridValid) {
+            goodVisibility = true;
+        } else {
+            board = boardSolution.map(row => row.slice()); //reset board
+            shuffle(cellCoords);
+        }
+
+        //need to check that there is only 1 solution
+    } 
 }
 
 function setHiddenCells(level) {
@@ -101,29 +133,6 @@ function setHiddenCells(level) {
             return 40;
     }   
 }
-
-/*
-function setMaxCluster(level) {
-    switch(level) {
-        case "easy":
-            return 7;
-        case "medium":
-            return 6;
-        case "hard":
-            return 5;
-        default:
-            return 7;
-    }
-}
-
-function clusterAllowed(row, col, max) {
-    //checking cluster count in 3x3 grid
-
-    //checking cluster count in row
-    
-    //checking cluster count in col
-}
-*/
 
 function uniquelySolvable(row, col) {
     //check if hiding cell at row, col results in uniquely solvable puzzle
@@ -141,7 +150,7 @@ function uniquelySolvable(row, col) {
 }
 
 function solvePuzzle(boardToSolve) {
-    let emptyCell = findEmptyCell();
+    let emptyCell = findEmptyCell(boardToSolve);
     if (!emptyCell) {
         return true; //no empty cells, board solved
     }
@@ -149,12 +158,12 @@ function solvePuzzle(boardToSolve) {
     let [row, col] = emptyCell;
 
     for (let num = 1; num <= 9; num++) {
-        if (isValid(row, col, num)) {
+        if (isValid(row, col, num, boardToSolve)) {
             //try placing num in the empty cell
             boardToSolve[row][col] = num;
 
             //recursively try to solve the updated board
-            if (solvePuzzle()) {
+            if (solvePuzzle(boardToSolve)) {
                 return true; //solution found
             }
 
@@ -166,10 +175,10 @@ function solvePuzzle(boardToSolve) {
     return false; //no solution found
 }
 
-function findEmptyCell() {
+function findEmptyCell(boardToSolve) {
     for (let i=0; i<9; i++) {
         for (let j=0; j<9; j++) {
-            if (board[i][j] === "") {
+            if (boardToSolve[i][j] === "") {
                 return [i, j]; //return the coordinates of the empty cell
             }
         }
@@ -177,27 +186,27 @@ function findEmptyCell() {
     return null; 
 }
 
-function isValid(row, col, num) {
+function isValid(row, col, num, boardToCheck) {
     //rules out horizontal match (row)
     for (let i = 0; i < 9; i++) {
-        if (board[row][i] === num) {
+        if (boardToCheck[row][i] === num) {
             return false;
         }
     }
 
     //rules out vertical match (column)
     for (let i = 0; i < 9; i++) {
-        if (board[i][col] === num) {
+        if (boardToCheck[i][col] === num) {
             return false;
         }
     }
 
     //rules out match in 3x3 subgrid
     const startRow = Math.floor(row / 3) * 3;
-    const startCol = Math.floor(col / 3) * 3;
+    const startCol = (col % 3) * 3;
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
-            if (board[startRow + i][startCol + j] === num) {
+            if (boardToCheck[startRow + i][startCol + j] === num) {
                 return false;
             }
         }
@@ -357,7 +366,7 @@ document.addEventListener("DOMContentLoaded", function() {
 //generate and display puzzle
 function setGame() {
     board = generatePuzzle();
-    displaySudoku(board);
+    displaySudoku();
 }
 
 globalThis.onload = function() {
