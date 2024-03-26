@@ -92,7 +92,7 @@ function hideNumbers() {
             
             //checking column visibility
             const column = board.map(row => row[i]);
-            if (!column.some(cell => cell === "")) {
+            if (!column.some(cell => cell === "")) {d
                 colValid = false;
             }
 
@@ -116,8 +116,6 @@ function hideNumbers() {
             board = boardSolution.map(row => row.slice()); //reset board
             shuffle(cellCoords);
         }
-        
-        //need to check that there is only 1 solution
     } 
 }
 
@@ -134,19 +132,14 @@ function setHiddenCells(level) {
     }   
 }
 
-function uniquelySolvable(row, col) {
-    //check if hiding cell at row, col results in uniquely solvable puzzle
-
-    const boardCopy = board.map(row => row.slice());
-
-    boardCopy[row][col] = ""; 
-
+function confirmUniqueSolution() {
     let solutions = 0;
-    solvePuzzle(boardCopy, () => {
+    solvePuzzle(board, () => {
         solutions++;
     });
     
-    return solutions === 1; //if 1 solution, returns true
+    return solutions === 1; 
+    //returns boolean, true if unique solution
 }
 
 function solvePuzzle(boardToSolve) {
