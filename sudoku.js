@@ -68,21 +68,24 @@ function hideNumbers() {
             cellCoords.push([i, j]);
         }
     }
-
     shuffle(cellCoords); //randomizes cell hiding
+    
+    let goodVisibility = false;
 
-    for (const [row, col] of cellCoords) {
-        if (hiddenCells >= cellsToHide) {
-            break; 
-        }
-        
-        if (Math.random() > 0.5) {
+    while (goodVisibility == false) {
+        for (let i=0; i<cellsToHide; i++) {
+            const [row, col] = cellCoords[i];
             board[row][col] = "";
             hiddenCells += 1;
         }
 
-        //need to ensure that max clusters not exceeded
-        //need to check that there is only 1 solution
+        //if every cell in row !empty = redo hiding
+        //if else every cell in column !empty = redo hiding
+        //if else every cell in 3x3 grid !empty = redo hiding
+        //else goodVisibility = true
+
+        //once visibility is good, need to check that there is only 1 solution
+        //call uniquelySolvable
     }
 }
 
