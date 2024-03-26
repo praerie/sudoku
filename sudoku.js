@@ -11,7 +11,10 @@ function generatePuzzle() {
     let row = 0;
     let col = 0;
     if (generatePuzzleRecursive(row, col)) { //if valid puzzle
+        console.log("checking board in generatePuzzle() after recursion")
+        console.log(board)
         boardSolution = board.map(row => row.slice()); //save copy of solution
+        console.log(boardSolution)
         hideNumbers(); //remove numbers to create starting puzzle
         return board;
     } else {
@@ -56,6 +59,7 @@ function generatePuzzleRecursive(row, col) {
 }
 
 function hideNumbers() {
+    console.log("inside hideNumbers")
     const difficulty = "easy"; //to-do: add difficulty buttons to interface
     const cellsToHide = setHiddenCells(difficulty);
 
@@ -66,6 +70,14 @@ function hideNumbers() {
         }
     }
     shuffle(cellCoords); //randomizes cell hiding
+
+    const isUnique = confirmUniqueSolution(board);
+    console.log("confirmUniqueSolution called, back in hideNumbers")
+    console.log(board)
+    console.log(isUnique);
+    if (!isUnique) {
+
+    }
     
     let goodVisibility = false;
 
@@ -75,7 +87,7 @@ function hideNumbers() {
         //hide cells: iterates thru shuffled coords, hiding specified cellsToHide amt 
         for (let i=0; i<cellsToHide; i++) {
             const [row, col] = cellCoords[i];
-            board[row][col] = "";
+            board[row][col] = '';
             hiddenCells += 1;
         }
 
@@ -86,13 +98,13 @@ function hideNumbers() {
         //checking if any row, col, or 3x3 grid is fully visible
         for (let i=0; i<9; i++) {
             //checking row visibility
-            if (!board[i].some(cell => cell === "")) {
+            if (!board[i].some(cell => cell === '')) {
                 rowValid = false;
             }
             
             //checking column visibility
             const column = board.map(row => row[i]);
-            if (!column.some(cell => cell === "")) {d
+            if (!column.some(cell => cell === '')) {
                 colValid = false;
             }
 
@@ -105,7 +117,7 @@ function hideNumbers() {
                     gridCells.push(board[j][k]);
                 }
             }
-            if (!gridCells.some(cell => cell === "")) {
+            if (!gridCells.some(cell => cell === '')) {
                 gridValid = false;
             }
         }
@@ -132,25 +144,34 @@ function setHiddenCells(level) {
     }   
 }
 
-function confirmUniqueSolution() {
+function confirmUniqueSolution(boardToSolve) {
+    console.log("inside confirmUniqueSolution")
     let solutions = 0;
-    solvePuzzle(board, () => {
+    solvePuzzle(boardToSolve, () => {
         solutions++;
     });
+
+    if (solutions == 0) {
+        console.log("insinde confirmUniqueSolution, 0 solutions found")
+    }
     
     return solutions === 1; 
     //returns boolean, true if unique solution
 }
 
 function solvePuzzle(boardToSolve) {
+    console.log("inside solvePuzzle now");
+    console.log(boardToSolve)
     let emptyCell = findEmptyCell(boardToSolve);
     if (!emptyCell) {
+        console.log("findEmptyCell returned null")
         return true; //no empty cells, board solved
     }
 
     let [row, col] = emptyCell;
 
     for (let num = 1; num <= 9; num++) {
+        console.log("inside for loop trying to place numbers");
         if (isValid(row, col, num, boardToSolve)) {
             //try placing num in the empty cell
             boardToSolve[row][col] = num;
@@ -168,14 +189,21 @@ function solvePuzzle(boardToSolve) {
     return false; //no solution found
 }
 
-function findEmptyCell(boardToSolve) {
+function findEmptyCell(boardHiddenCells) {
+    console.log("inside findEmptyCell", boardHiddenCells);
+    
     for (let i=0; i<9; i++) {
         for (let j=0; j<9; j++) {
-            if (boardToSolve[i][j] === "") {
+
+            console.log(boardHiddenCells[i][j])
+
+            if (boardHiddenCells[i][j] === '') {
+                console.log("found an empty cell and returning it")
                 return [i, j]; //return the coordinates of the empty cell
             }
         }
     }
+    console.log("about to return null in findEmptyCEll")
     return null; 
 }
 
@@ -283,7 +311,7 @@ function clickCell() {
     let prevClass = this.className;
 
     if (numClicked) { //check if cell is filled to avoid cell override
-        if (this.innerText != "") {
+        if (this.innerText != '') {
             return;
         }
 
