@@ -58,6 +58,14 @@ function generatePuzzleRecursive(row, col, recursiveBoard) {
     return false;
 }
 
+/*
+    the drama:
+    let uniquePuzzle = confirmUniqueSolution(boardSolution); //verify that puzzle has unique solution
+
+    if (uniquePuzzle) console.log("in generate puzzle", true);
+    else console.log("in generate puzzle", false);
+*/
+
 function hideNumbers(hiddenNumsBoard, boardSolution) {
     console.log("inside hideNumbers")
     const difficulty = "easy"; //to-do: add difficulty buttons to interface
@@ -70,14 +78,6 @@ function hideNumbers(hiddenNumsBoard, boardSolution) {
         }
     }
     shuffle(cellCoords); //randomizes cell hiding
-
-    const isUnique = confirmUniqueSolution(hiddenNumsBoard);
-    console.log("confirmUniqueSolution called, back in hideNumbers")
-    console.log(hiddenNumsBoard)
-    console.log(isUnique);
-    if (!isUnique) {
-        //
-    }
     
     let goodVisibility = false;
 
