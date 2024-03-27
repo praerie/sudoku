@@ -1,4 +1,5 @@
-let strikes = 0;
+let strikes = 0,
+    strikeLimit = 3;
 let numClicked;
 
 function generatePuzzle() {
@@ -341,31 +342,58 @@ function clickCell(boardSolution) {
         let row = parseInt(pos[0]);
         let col = parseInt(pos[1]);
                     
+        //start strike loop here instead
         if (boardSolution[row][col] == numClicked.id) { //check if good choice
             this.innerText = numClicked.id;
             this.classList.add("user-entered");
 
-            //play ding sound
-            const dingSound = document.getElementById("dingSound");
-            dingSound.volume = 0.5;
-            dingSound.currentTime = 0; 
-            dingSound.play();
+            playValidMoveSound();
         } else { //otherwise, bad choice
             strikes += 1;
             document.getElementById("strikes").innerText = strikes;
-            this.innerText = numClicked.id;
-            this.classList.add("cell-error");
 
-            //record move in history
-            saveMove(this, prevContent, prevClass);
+            if (strikes == strikeLimit) {
+                console.log("Game over. Good try! Restart or generate new puzzle?");
+                this.innerText = numClicked.id;
+                this.classList.add("cell-error");
 
-            //play oops sound
-            const oopsSound = document.getElementById("oopsSound");
-            oopsSound.volume = 0.3;
-            oopsSound.currentTime = 0; 
-            oopsSound.play();
+                playInvalidMoveSound();
+
+                //prompt to restart same puzzle or play new puzzle
+            } else if (strikes > strikeLimit) {
+                playCannotMoveSound();
+            } else {
+                this.innerText = numClicked.id;
+                this.classList.add("cell-error");
+
+                playInvalidMoveSound();
+
+                //record move in history
+                saveMove(this, prevContent, prevClass);
+            }
         }
     }
+}
+
+function playValidMoveSound() {
+    const validSound = document.getElementById("validSound"); //ding.wav
+    validSound.volume = 0.5;
+    validSound.currentTime = 0; 
+    validSound.play();
+}
+
+function playInvalidMoveSound() {
+    const invalidMoveSound = document.getElementById("invalidSound"); //oops.wav
+    invalidSound.volume = 0.3;
+    invalidSound.currentTime = 0; 
+    invalidSound.play();
+}
+
+function playCannotMoveSound() {
+    const noMoveSound = document.getElementById("noMoveSound"); //click2.wav
+    noMoveSound.volume = 0.3;
+    noMoveSound.currentTime = 0; 
+    noMoveSound.play();
 }
 
 //save moves to array, allows 'undo' 
