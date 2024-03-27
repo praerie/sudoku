@@ -8,15 +8,12 @@ function generatePuzzle() {
         //for each row, inner Array.from() creates 9 columns 
     
     //fill the board
-    let row = 0;
-    let col = 0;
-    if (generatePuzzleRecursive(row, col, boardSolution)) { //if valid puzzle
-        let boardCopy = JSON.parse(JSON.stringify(boardSolution)); //deep copy of boardSolution (non-referencing)
-        let startingBoard = hideNumbers(boardCopy, boardSolution); //remove numbers to create starting puzzle
-        let isUnique = confirmUniqueSolution(startingBoard);
+    let row = 0,
+        col = 0;
 
-            if(isUnique) console.log("unique")
-            else console.log("not unique")
+    if (generatePuzzleRecursive(row, col, boardSolution)) { //if valid puzzle
+        let boardCopy = cloneBoard(boardSolution); //deep copy of boardSolution (non-referencing)
+        let startingBoard = hideNumbers(boardCopy, boardSolution); //remove numbers to create starting puzzle
 
         return [startingBoard, boardSolution];
     } else {
@@ -62,7 +59,7 @@ function generatePuzzleRecursive(row, col, recursiveBoard) {
 }
 
 function hideNumbers(boardHideCells, boardSolution) {
-    let board = JSON.parse(JSON.stringify(boardHideCells)); //deep copy
+    let board = cloneBoard(boardHideCells); 
 
     const difficulty = "easy"; //to-do: add difficulty buttons to interface
     const cellsToHide = setHiddenCells(difficulty);
@@ -75,9 +72,10 @@ function hideNumbers(boardHideCells, boardSolution) {
     }
     shuffle(cellCoords); //randomizes cell hiding
     
-    let goodVisibility = false;
+    let goodVisibility = false,
+        isUnique = false;
 
-    while (!goodVisibility) {
+    while (!goodVisibility || !isUnique) {
         let hiddenCells = 0;
 
         //hide cells: iterates thru shuffled coords, hiding specified cellsToHide amt 
@@ -118,10 +116,20 @@ function hideNumbers(boardHideCells, boardSolution) {
             }
         }
 
+        //checking uniqueness
+        isUnique = confirmUniqueSolution(board);
+        if (isUnique) {
+            isUnique = true;
+        } else {
+            board = cloneBoard(boardSolution); //creating deep copy to 'reset'
+            shuffle(cellCoords);
+        }
+
+        //checking for valid visibility conditions
         if (rowValid && colValid && gridValid) {
             goodVisibility = true;
         } else {
-            board = JSON.parse(JSON.stringify(boardSolution)); //creating deep copy to 'reset'
+            board = cloneBoard(boardSolution); //creating deep copy to 'reset'
             shuffle(cellCoords);
         }
     } 
@@ -143,23 +151,41 @@ function setHiddenCells(level) {
 }
 
 function confirmUniqueSolution(boardConfirm) {
-    let board = JSON.parse(JSON.stringify(boardConfirm));
+    let board = cloneBoard(boardConfirm);
 
-    //NOTE: currently not functioning how intended; need to loop to find all possible solutions
+    let allSolutions = [];
+    findAllSolutions(board, allSolutions);
 
-    let solutions = 0;
+    //returning true if only one solution is found
+    return allSolutions.length === 1;
+}
 
-    if (solvePuzzle(board)) {
-        solutions += 1;
-        console.log("solutions: ", solutions)
-    } 
-    
-    return solutions === 1; 
-    //returns boolean, true if unique solution
+function findAllSolutions(board, allSolutions) {
+    let emptyCell = findEmptyCell(board);
+    if (!emptyCell) {
+        //if no empty cells left, add the current board as a solution
+        allSolutions.push(cloneBoard(board));
+        return;
+    }
+
+    let [row, col] = emptyCell;
+
+    for (let num=1; num<=9; num++) {
+        if (isValid(row, col, num, board)) {
+            //placing num in empty cell
+            board[row][col] = num;
+
+            //recursively find solutions with the updated board
+            findAllSolutions(board, allSolutions);
+
+            //backtrack if placing num didn't lead to a solution
+            board[row][col] = 0;
+        }
+    }
 }
 
 function solvePuzzle(boardSolve) {
-    let board = JSON.parse(JSON.stringify(boardSolve));
+    let board = cloneBoard(boardSolve);
 
     let emptyCell = findEmptyCell(board);
     if (!emptyCell) {
@@ -168,8 +194,7 @@ function solvePuzzle(boardSolve) {
 
     let [row, col] = emptyCell;
 
-    for (let num = 1; num <= 9; num++) {
-        console.log("solvePuzzle, trying to place number");
+    for (let num=1; num<=9; num++) {
         if (isValid(row, col, num, board)) {
             //try placing num in the empty cell
             board[row][col] = num;
@@ -188,12 +213,11 @@ function solvePuzzle(boardSolve) {
 }
 
 function findEmptyCell(boardFindHidden) {
-    let board = JSON.parse(JSON.stringify(boardFindHidden));
+    let board = cloneBoard(boardFindHidden);
 
     for (let i=0; i<9; i++) {
         for (let j=0; j<9; j++) {
             if (board[i][j] === 0) {
-                console.log("found an empty cell at", i, j);
                 return [i, j]; //return coords of empty cell
             }
         }
@@ -381,6 +405,10 @@ document.addEventListener("DOMContentLoaded", function() {
     solveBtn.addEventListener("click", clickControl);
     solveBtn.addEventListener("click", solvePuzzle)
 });
+
+function cloneBoard(board) {
+    return JSON.parse(JSON.stringify(board));
+}
 
 //generate and display puzzle
 function setGame() {
