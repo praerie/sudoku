@@ -11,8 +11,13 @@ function generatePuzzle() {
     let row = 0;
     let col = 0;
     if (generatePuzzleRecursive(row, col, boardSolution)) { //if valid puzzle
-        let boardCopy = boardSolution.map(row => row.slice()); //save copy of solution
+        let boardCopy = JSON.parse(JSON.stringify(boardSolution)); //deep copy of boardSolution (non-referencing)
         let startingBoard = hideNumbers(boardCopy, boardSolution); //remove numbers to create starting puzzle
+        let isUnique = confirmUniqueSolution(startingBoard);
+
+            if(isUnique) console.log("unique")
+            else console.log("not unique")
+
         return [startingBoard, boardSolution];
     } else {
         return null; 
@@ -20,8 +25,6 @@ function generatePuzzle() {
 }
 
 function generatePuzzleRecursive(row, col, recursiveBoard) {
-    console.log("inside generatePuzzle", recursiveBoard)
-
     //base case: if all cells filled, return true
     if (row === 9) {
         return true;
@@ -58,16 +61,9 @@ function generatePuzzleRecursive(row, col, recursiveBoard) {
     return false;
 }
 
-/*
-    the drama:
-    let uniquePuzzle = confirmUniqueSolution(boardSolution); //verify that puzzle has unique solution
+function hideNumbers(boardHideCells, boardSolution) {
+    let board = JSON.parse(JSON.stringify(boardHideCells)); //deep copy
 
-    if (uniquePuzzle) console.log("in generate puzzle", true);
-    else console.log("in generate puzzle", false);
-*/
-
-function hideNumbers(hiddenNumsBoard, boardSolution) {
-    console.log("inside hideNumbers")
     const difficulty = "easy"; //to-do: add difficulty buttons to interface
     const cellsToHide = setHiddenCells(difficulty);
 
@@ -87,7 +83,7 @@ function hideNumbers(hiddenNumsBoard, boardSolution) {
         //hide cells: iterates thru shuffled coords, hiding specified cellsToHide amt 
         for (let i=0; i<cellsToHide; i++) {
             const [row, col] = cellCoords[i];
-            hiddenNumsBoard[row][col] = '';
+            board[row][col] = 0;
             hiddenCells += 1;
         }
 
@@ -98,13 +94,13 @@ function hideNumbers(hiddenNumsBoard, boardSolution) {
         //checking if any row, col, or 3x3 grid is fully visible
         for (let i=0; i<9; i++) {
             //checking row visibility
-            if (!hiddenNumsBoard[i].some(cell => cell === '')) {
+            if (!board[i].some(cell => cell === 0)) {
                 rowValid = false;
             }
             
             //checking column visibility
-            const column = hiddenNumsBoard.map(row => row[i]);
-            if (!column.some(cell => cell === '')) {
+            const column = board.map(row => row[i]);
+            if (!column.some(cell => cell === 0)) {
                 colValid = false;
             }
 
@@ -114,10 +110,10 @@ function hideNumbers(hiddenNumsBoard, boardSolution) {
             const gridCells = [];
             for (let j=startRow; j<startRow + 3; j++) {
                 for (let k=startCol; k<startCol + 3; k++) {
-                    gridCells.push(hiddenNumsBoard[j][k]);
+                    gridCells.push(board[j][k]);
                 }
             }
-            if (!gridCells.some(cell => cell === '')) {
+            if (!gridCells.some(cell => cell === 0)) {
                 gridValid = false;
             }
         }
@@ -125,12 +121,12 @@ function hideNumbers(hiddenNumsBoard, boardSolution) {
         if (rowValid && colValid && gridValid) {
             goodVisibility = true;
         } else {
-            hiddenNumsBoard = boardSolution.map(row => row.slice()); //reset board
+            board = JSON.parse(JSON.stringify(boardSolution)); //creating deep copy to 'reset'
             shuffle(cellCoords);
         }
     } 
 
-    return hiddenNumsBoard;
+    return board;
 }
 
 function setHiddenCells(level) {
@@ -146,67 +142,62 @@ function setHiddenCells(level) {
     }   
 }
 
-function confirmUniqueSolution(confirmingBoard) {
-    console.log("inside confirmUniqueSolution")
-    console.log(confirmingBoard)
-    let solutions = 0;
-    solvePuzzle(confirmingBoard, () => {
-        solutions++;
-    });
+function confirmUniqueSolution(boardConfirm) {
+    let board = JSON.parse(JSON.stringify(boardConfirm));
 
-    if (solutions == 0) {
-        console.log("insinde confirmUniqueSolution, 0 solutions found")
-    }
+    //NOTE: currently not functioning how intended; need to loop to find all possible solutions
+
+    let solutions = 0;
+
+    if (solvePuzzle(board)) {
+        solutions += 1;
+        console.log("solutions: ", solutions)
+    } 
     
     return solutions === 1; 
     //returns boolean, true if unique solution
 }
 
-function solvePuzzle(solvingBoard) {
-    console.log("inside solvePuzzle now");
-    console.log(solvingBoard)
-    let emptyCell = findEmptyCell(solvingBoard);
+function solvePuzzle(boardSolve) {
+    let board = JSON.parse(JSON.stringify(boardSolve));
+
+    let emptyCell = findEmptyCell(board);
     if (!emptyCell) {
-        console.log("findEmptyCell returned null")
         return true; //no empty cells, board solved
     }
 
     let [row, col] = emptyCell;
 
     for (let num = 1; num <= 9; num++) {
-        console.log("inside for loop trying to place numbers");
-        if (isValid(row, col, num, solvingBoard)) {
+        console.log("solvePuzzle, trying to place number");
+        if (isValid(row, col, num, board)) {
             //try placing num in the empty cell
-            solvingBoard[row][col] = num;
+            board[row][col] = num;
 
             //recursively try to solve the updated board
-            if (solvePuzzle(solvingBoard)) {
+            if (solvePuzzle(board)) {
                 return true; //solution found
             }
 
             //backtrack if placing num didn't lead to a solution
-            solvingBoard[row][col] = 0;
+            board[row][col] = 0;
         }
     }
 
     return false; //no solution found
 }
 
-function findEmptyCell(boardHiddenCells) {
-    console.log("inside findEmptyCell", boardHiddenCells, boardHiddenCells[0][1] === '');
-    
+function findEmptyCell(boardFindHidden) {
+    let board = JSON.parse(JSON.stringify(boardFindHidden));
+
     for (let i=0; i<9; i++) {
         for (let j=0; j<9; j++) {
-
-            console.log(boardHiddenCells[i][j], typeof boardHiddenCells[i][j])
-
-            if (boardHiddenCells[i][j] === '') {
-                console.log("found an empty cell and returning it")
-                return [i, j]; //return the coordinates of the empty cell
+            if (board[i][j] === 0) {
+                console.log("found an empty cell at", i, j);
+                return [i, j]; //return coords of empty cell
             }
         }
     }
-    console.log("about to return null in findEmptyCEll")
     return null; 
 }
 
@@ -253,7 +244,8 @@ function displaySudoku(displayingBoard, boardSolution) {
             cell.classList.add("sudoku-cell");
 
             //set cell value from global board array
-            cell.innerText = displayingBoard[row][col];
+            const cellValue = displayingBoard[row][col];
+            cell.innerText = cellValue !== 0 ? cellValue : '';
             sudokuBoard.append(cell);
 
             //create dividers
@@ -387,6 +379,7 @@ document.addEventListener("DOMContentLoaded", function() {
     hintBtn.addEventListener("click", clickControl);
     generateBtn.addEventListener("click", clickControl);
     solveBtn.addEventListener("click", clickControl);
+    solveBtn.addEventListener("click", solvePuzzle)
 });
 
 //generate and display puzzle
