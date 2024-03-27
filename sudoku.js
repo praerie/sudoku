@@ -1,4 +1,5 @@
-let strikes = 0;
+let strikes = 3; 
+const strikeLimit = 3;
 let numClicked;
 
 function generatePuzzle() {
@@ -331,41 +332,73 @@ function clickCell(boardSolution) {
     let prevContent = this.innerText;
     let prevClass = this.className;
 
-    if (numClicked) { //check if cell is filled to avoid cell override
-        if (this.innerText != '') {
-            return;
+    if (numClicked) { 
+        if (strikes <= strikeLimit) { //only 3 strikes allowed
+            if (strikes > 0) { //if enough strikes left, check input
+                if (this.innerText != '') { 
+                    return;
+                } //check if cell is filled to avoid override 
+        
+                //determine board position 
+                let pos = this.id.split(",");
+                let row = parseInt(pos[0]);
+                let col = parseInt(pos[1]);
+    
+                //validate input against solved board
+                if (boardSolution[row][col] == numClicked.id) { //valid input
+                    this.innerText = numClicked.id;
+                    this.classList.add("user-entered");
+    
+                    playValidMoveSound();
+                } else { //invalid input
+                    strikes--;
+                    console.log("strikes", strikes);
+                    document.getElementById("strikes").innerText = strikes;
+    
+                    this.innerText = numClicked.id;
+                    this.classList.add("cell-error");
+    
+                    playInvalidMoveSound();
+    
+                    //record move in history
+                    saveMove(this, prevContent, prevClass);
+                }
+            } else if (strikes === 0) {
+                strikes = 4;
+                console.log("strikes", strikes);
+                console.log("Game over. Good try!");
+                this.innerText = numClicked.id;
+                this.classList.add("last-error");
+
+                playCannotMoveSound();
+
+                //don't need to save because no undo at this point
+            } 
+        } else {
+            playCannotMoveSound();
         }
+    } 
+}
 
-        //validate input against solved board
-        let pos = this.id.split(",");
-        let row = parseInt(pos[0]);
-        let col = parseInt(pos[1]);
-                    
-        if (boardSolution[row][col] == numClicked.id) { //check if good choice
-            this.innerText = numClicked.id;
-            this.classList.add("user-entered");
+function playValidMoveSound() {
+    const validSound = document.getElementById("validSound"); //ding.wav
+    validSound.volume = 0.5;
+    validSound.currentTime = 0; 
+    validSound.play();
+}
 
-            //play ding sound
-            const dingSound = document.getElementById("dingSound");
-            dingSound.volume = 0.5;
-            dingSound.currentTime = 0; 
-            dingSound.play();
-        } else { //otherwise, bad choice
-            strikes += 1;
-            document.getElementById("strikes").innerText = strikes;
-            this.innerText = numClicked.id;
-            this.classList.add("cell-error");
+function playInvalidMoveSound() {
+    const invalidMoveSound = document.getElementById("invalidSound"); //oops.wav
+    invalidSound.volume = 0.3;
+    invalidSound.currentTime = 0; 
+    invalidSound.play();
+}
 
-            //record move in history
-            saveMove(this, prevContent, prevClass);
-
-            //play oops sound
-            const oopsSound = document.getElementById("oopsSound");
-            oopsSound.volume = 0.3;
-            oopsSound.currentTime = 0; 
-            oopsSound.play();
-        }
-    }
+function playCannotMoveSound() {
+    const noMoveSound = document.getElementById("noMoveSound"); //click2.wav
+    noMoveSound.volume = 0.3;
+    noMoveSound.currentTime = 0; 
+    noMoveSound.play();
 }
 
 //save moves to array, allows 'undo' 
