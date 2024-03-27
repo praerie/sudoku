@@ -8,15 +8,12 @@ function generatePuzzle() {
         //for each row, inner Array.from() creates 9 columns 
     
     //fill the board
-    let row = 0;
-    let col = 0;
+    let row = 0,
+        col = 0;
+
     if (generatePuzzleRecursive(row, col, boardSolution)) { //if valid puzzle
         let boardCopy = cloneBoard(boardSolution); //deep copy of boardSolution (non-referencing)
         let startingBoard = hideNumbers(boardCopy, boardSolution); //remove numbers to create starting puzzle
-        let isUnique = confirmUniqueSolution(startingBoard);
-
-            if(isUnique) console.log("unique")
-            else console.log("not unique")
 
         return [startingBoard, boardSolution];
     } else {
@@ -75,9 +72,10 @@ function hideNumbers(boardHideCells, boardSolution) {
     }
     shuffle(cellCoords); //randomizes cell hiding
     
-    let goodVisibility = false;
+    let goodVisibility = false,
+        isUnique = false;
 
-    while (!goodVisibility) {
+    while (!goodVisibility || !isUnique) {
         let hiddenCells = 0;
 
         //hide cells: iterates thru shuffled coords, hiding specified cellsToHide amt 
@@ -118,6 +116,16 @@ function hideNumbers(boardHideCells, boardSolution) {
             }
         }
 
+        //checking uniqueness
+        isUnique = confirmUniqueSolution(board);
+        if (isUnique) {
+            isUnique = true;
+        } else {
+            board = cloneBoard(boardSolution); //creating deep copy to 'reset'
+            shuffle(cellCoords);
+        }
+
+        //checking for valid visibility conditions
         if (rowValid && colValid && gridValid) {
             goodVisibility = true;
         } else {
