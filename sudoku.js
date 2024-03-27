@@ -145,17 +145,35 @@ function setHiddenCells(level) {
 function confirmUniqueSolution(boardConfirm) {
     let board = JSON.parse(JSON.stringify(boardConfirm));
 
-    //NOTE: currently not functioning how intended; need to loop to find all possible solutions
+    let allSolutions = [];
+    findAllSolutions(board, allSolutions);
 
-    let solutions = 0;
+    //returning true if only one solution is found
+    return allSolutions.length === 1;
+}
 
-    if (solvePuzzle(board)) {
-        solutions += 1;
-        console.log("solutions: ", solutions)
-    } 
-    
-    return solutions === 1; 
-    //returns boolean, true if unique solution
+function findAllSolutions(board, allSolutions) {
+    let emptyCell = findEmptyCell(board);
+    if (!emptyCell) {
+        //if no empty cells left, add the current board as a solution
+        allSolutions.push(JSON.parse(JSON.stringify(board)));
+        return;
+    }
+
+    let [row, col] = emptyCell;
+
+    for (let num=1; num<=9; num++) {
+        if (isValid(row, col, num, board)) {
+            //placing num in empty cell
+            board[row][col] = num;
+
+            //recursively find solutions with the updated board
+            findAllSolutions(board, allSolutions);
+
+            //backtrack if placing num didn't lead to a solution
+            board[row][col] = 0;
+        }
+    }
 }
 
 function solvePuzzle(boardSolve) {
@@ -168,8 +186,7 @@ function solvePuzzle(boardSolve) {
 
     let [row, col] = emptyCell;
 
-    for (let num = 1; num <= 9; num++) {
-        console.log("solvePuzzle, trying to place number");
+    for (let num=1; num<=9; num++) {
         if (isValid(row, col, num, board)) {
             //try placing num in the empty cell
             board[row][col] = num;
@@ -193,7 +210,6 @@ function findEmptyCell(boardFindHidden) {
     for (let i=0; i<9; i++) {
         for (let j=0; j<9; j++) {
             if (board[i][j] === 0) {
-                console.log("found an empty cell at", i, j);
                 return [i, j]; //return coords of empty cell
             }
         }
