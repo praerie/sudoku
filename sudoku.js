@@ -11,7 +11,7 @@ function generatePuzzle() {
     let row = 0;
     let col = 0;
     if (generatePuzzleRecursive(row, col, boardSolution)) { //if valid puzzle
-        let boardCopy = JSON.parse(JSON.stringify(boardSolution)); //deep copy of boardSolution (non-referencing)
+        let boardCopy = cloneBoard(boardSolution); //deep copy of boardSolution (non-referencing)
         let startingBoard = hideNumbers(boardCopy, boardSolution); //remove numbers to create starting puzzle
         let isUnique = confirmUniqueSolution(startingBoard);
 
@@ -62,7 +62,7 @@ function generatePuzzleRecursive(row, col, recursiveBoard) {
 }
 
 function hideNumbers(boardHideCells, boardSolution) {
-    let board = JSON.parse(JSON.stringify(boardHideCells)); //deep copy
+    let board = cloneBoard(boardHideCells); 
 
     const difficulty = "easy"; //to-do: add difficulty buttons to interface
     const cellsToHide = setHiddenCells(difficulty);
@@ -121,7 +121,7 @@ function hideNumbers(boardHideCells, boardSolution) {
         if (rowValid && colValid && gridValid) {
             goodVisibility = true;
         } else {
-            board = JSON.parse(JSON.stringify(boardSolution)); //creating deep copy to 'reset'
+            board = cloneBoard(boardSolution); //creating deep copy to 'reset'
             shuffle(cellCoords);
         }
     } 
@@ -143,7 +143,7 @@ function setHiddenCells(level) {
 }
 
 function confirmUniqueSolution(boardConfirm) {
-    let board = JSON.parse(JSON.stringify(boardConfirm));
+    let board = cloneBoard(boardConfirm);
 
     let allSolutions = [];
     findAllSolutions(board, allSolutions);
@@ -156,7 +156,7 @@ function findAllSolutions(board, allSolutions) {
     let emptyCell = findEmptyCell(board);
     if (!emptyCell) {
         //if no empty cells left, add the current board as a solution
-        allSolutions.push(JSON.parse(JSON.stringify(board)));
+        allSolutions.push(cloneBoard(board));
         return;
     }
 
@@ -177,7 +177,7 @@ function findAllSolutions(board, allSolutions) {
 }
 
 function solvePuzzle(boardSolve) {
-    let board = JSON.parse(JSON.stringify(boardSolve));
+    let board = cloneBoard(boardSolve);
 
     let emptyCell = findEmptyCell(board);
     if (!emptyCell) {
@@ -205,7 +205,7 @@ function solvePuzzle(boardSolve) {
 }
 
 function findEmptyCell(boardFindHidden) {
-    let board = JSON.parse(JSON.stringify(boardFindHidden));
+    let board = cloneBoard(boardFindHidden);
 
     for (let i=0; i<9; i++) {
         for (let j=0; j<9; j++) {
@@ -397,6 +397,10 @@ document.addEventListener("DOMContentLoaded", function() {
     solveBtn.addEventListener("click", clickControl);
     solveBtn.addEventListener("click", solvePuzzle)
 });
+
+function cloneBoard(board) {
+    return JSON.parse(JSON.stringify(board));
+}
 
 //generate and display puzzle
 function setGame() {
