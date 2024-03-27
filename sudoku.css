@@ -59,6 +59,11 @@ hr {
     color: aliceblue;
 }
 
+.last-error {
+    background-color: darkred;
+    color: aliceblue;
+}
+
 #nums {
     width: 540px;
     height: 60px;
