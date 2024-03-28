@@ -2,7 +2,7 @@ let strikes = 3;
 const strikeLimit = 3;
 let numClicked;
 
-function generatePuzzle() {
+function generatePuzzle(level) {
     //create empty 9x9 puzzle
     let boardSolution = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0));
         //outer Array.from() creates 9 rows;
@@ -14,7 +14,7 @@ function generatePuzzle() {
 
     if (generatePuzzleRecursive(row, col, boardSolution)) { //if valid puzzle
         let boardCopy = cloneBoard(boardSolution); //deep copy of boardSolution (non-referencing)
-        let startingBoard = hideNumbers(boardCopy, boardSolution); //remove numbers to create starting puzzle
+        let startingBoard = hideNumbers(boardCopy, boardSolution, level); //remove numbers to create starting puzzle
 
         return [startingBoard, boardSolution];
     } else {
@@ -59,10 +59,8 @@ function generatePuzzleRecursive(row, col, recursiveBoard) {
     return false;
 }
 
-function hideNumbers(boardHideCells, boardSolution) {
+function hideNumbers(boardHideCells, boardSolution, difficulty) {
     let board = cloneBoard(boardHideCells); 
-
-    const difficulty = "easy"; //default
     const cellsToHide = setHiddenCells(difficulty);
 
     const cellCoords = [];
@@ -445,18 +443,29 @@ document.addEventListener("DOMContentLoaded", function() {
     generateBtn.addEventListener("click", playControlSound);
     solveBtn.addEventListener("click", playControlSound);
     solveBtn.addEventListener("click", solvePuzzle)
-    easyBtn.addEventListener("click", playControlSound);
-    mediumBtn.addEventListener("click", playControlSound);
-    hardBtn.addEventListener("click", playControlSound);
+});
+
+easyBtn.addEventListener("click", function() {
+    setGame("easy");
+});
+mediumBtn.addEventListener("click", function() {
+    setGame("medium");
+});
+hardBtn.addEventListener("click", function() {
+    setGame("hard");
 });
 
 //generate and display puzzle
-function setGame() {
-    let [startingBoard, boardSolution] = generatePuzzle();
+function setGame(level) {
+    const sudokuBoard = document.getElementById("sudoku-board");
+    sudokuBoard.innerHTML = '';
+    //error: this is causing board sounds to not play
+
+    let [startingBoard, boardSolution] = generatePuzzle(level);
     displaySudoku(startingBoard, boardSolution);
 }
 
 globalThis.onload = function() {
-    setGame();
+    setGame("default");
 }
 
