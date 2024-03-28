@@ -12,7 +12,16 @@ hr {
     color: indianred;
 }
 
-#sudoku-container {
+.difficulty-container {
+    display: flex;
+    justify-content: space-between;
+    width: 200px;
+    padding-bottom: 20px;
+    margin: 0 auto;
+    font-weight: 700;
+}
+
+.sudoku-container {
     width: 600px;
     height: 600px;
     margin: 0 auto;
