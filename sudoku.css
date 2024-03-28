@@ -12,15 +12,6 @@ hr {
     color: indianred;
 }
 
-.difficulty-container {
-    display: flex;
-    justify-content: space-between;
-    width: 200px;
-    padding-bottom: 20px;
-    margin: 0 auto;
-    font-weight: 700;
-}
-
 .sudoku-container {
     width: 600px;
     height: 600px;
@@ -55,22 +46,35 @@ hr {
 }
 
 .sudoku-cell:hover {
-    background-color: aliceblue;
+    background-color: seashell;
 }
 
-.user-entered {
+.difficulty-container {
+    display: flex;
+    justify-content: space-around;
+    width: 200px;
+    margin: 0 auto;
+    padding-bottom: 20px;
+    font-weight: 700;
+}
+
+.cell-valid {
     background-color: antiquewhite;
     color: teal;
 }
 
-.cell-error {
-    background-color: indianred;
-    color: aliceblue;
+.cell-valid:hover {
+    background-color: lightcyan;
 }
 
-.last-error {
+.cell-invalid {
     background-color: darkred;
-    color: aliceblue;
+    color: #F39999;
+}
+
+.cell-invalid:hover {
+    background-color: lightcoral;
+    color: darkred;
 }
 
 #nums {

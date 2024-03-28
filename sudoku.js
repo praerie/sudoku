@@ -62,7 +62,7 @@ function generatePuzzleRecursive(row, col, recursiveBoard) {
 function hideNumbers(boardHideCells, boardSolution) {
     let board = cloneBoard(boardHideCells); 
 
-    const difficulty = "easy"; //to-do: add difficulty buttons to interface
+    const difficulty = "easy"; //default
     const cellsToHide = setHiddenCells(difficulty);
 
     const cellCoords = [];
@@ -366,7 +366,7 @@ function clickCell(boardSolution) {
                 strikes = 4;
                 document.getElementById("strikes").innerText = "Out of strikes! Game over.";
                 this.innerText = numClicked.id;
-                this.classList.add("last-strike");
+                this.classList.add("cell-invalid");
 
                 playCannotMoveSound();
 
@@ -399,6 +399,13 @@ function playCannotMoveSound() {
     noMoveSound.play();
 }
 
+function playControlSound() {
+    const controlSound = document.getElementById("controlSound");
+    controlSound.volume = 0.3;
+    controlSound.currentTime = 0; 
+    controlSound.play();
+}
+
 //save moves to array, allows 'undo' 
 let moveHx = []; 
 function saveMove(cell, prevContent) {
@@ -415,31 +422,33 @@ function undo() {
     }
 }
 
+function cloneBoard(board) {
+    return JSON.parse(JSON.stringify(board));
+}
+
 //game control button sounds and listeners
 const undoBtn = document.getElementById("undoBtn");
 const hintBtn = document.getElementById("hintBtn");
 const generateBtn = document.getElementById("generateBtn");
 const solveBtn = document.getElementById("solveBtn");
 
-function clickControl() {
-    const controlSound = document.getElementById("controlSound");
-    controlSound.volume = 0.3;
-    controlSound.currentTime = 0; 
-    controlSound.play();
-}
+//difficulty level buttons
+const easyBtn = document.getElementById("easy");
+const mediumBtn = document.getElementById("medium");
+const hardBtn = document.getElementById("hard");
 
+//button event listeners
 document.addEventListener("DOMContentLoaded", function() {
-    undoBtn.addEventListener("click", clickControl);
+    undoBtn.addEventListener("click", playControlSound);
     undoBtn.addEventListener("click", undo);
-    hintBtn.addEventListener("click", clickControl);
-    generateBtn.addEventListener("click", clickControl);
-    solveBtn.addEventListener("click", clickControl);
+    hintBtn.addEventListener("click", playControlSound);
+    generateBtn.addEventListener("click", playControlSound);
+    solveBtn.addEventListener("click", playControlSound);
     solveBtn.addEventListener("click", solvePuzzle)
+    easyBtn.addEventListener("click", playControlSound);
+    mediumBtn.addEventListener("click", playControlSound);
+    hardBtn.addEventListener("click", playControlSound);
 });
-
-function cloneBoard(board) {
-    return JSON.parse(JSON.stringify(board));
-}
 
 //generate and display puzzle
 function setGame() {
