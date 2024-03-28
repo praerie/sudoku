@@ -46,22 +46,28 @@ hr {
 }
 
 .sudoku-cell:hover {
-    background-color: aliceblue;
+    background-color: seashell;
 }
 
-.user-entered {
+.cell-valid {
     background-color: antiquewhite;
     color: teal;
 }
 
-.cell-error {
-    background-color: indianred;
-    color: aliceblue;
+.cell-valid:hover {
+    background-color: lightcyan;
 }
 
-.last-error {
+.cell-invalid,
+.cell-invalid:hover,
+.last-strike:hover {
+    background-color: lightcoral;
+    color: darkred;
+}
+
+.last-strike {
     background-color: darkred;
-    color: aliceblue;
+    color: #F39999;
 }
 
 #nums {

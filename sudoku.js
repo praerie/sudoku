@@ -347,16 +347,15 @@ function clickCell(boardSolution) {
                 //validate input against solved board
                 if (boardSolution[row][col] == numClicked.id) { //valid input
                     this.innerText = numClicked.id;
-                    this.classList.add("user-entered");
+                    this.classList.add("cell-valid");
     
                     playValidMoveSound();
                 } else { //invalid input
                     strikes--;
-                    console.log("strikes", strikes);
                     document.getElementById("strikes").innerText = strikes;
     
                     this.innerText = numClicked.id;
-                    this.classList.add("cell-error");
+                    this.classList.add("cell-invalid");
     
                     playInvalidMoveSound();
     
@@ -365,10 +364,9 @@ function clickCell(boardSolution) {
                 }
             } else if (strikes === 0) {
                 strikes = 4;
-                console.log("strikes", strikes);
-                console.log("Game over. Good try!");
+                document.getElementById("strikes").innerText = "Out of strikes! Game over.";
                 this.innerText = numClicked.id;
-                this.classList.add("last-error");
+                this.classList.add("last-strike");
 
                 playCannotMoveSound();
 
@@ -413,7 +411,7 @@ function undo() {
         let lastMove = moveHx.pop();
 
         lastMove.cell.innerText = lastMove.prevContent;
-        lastMove.cell.classList.remove("cell-error");
+        lastMove.cell.classList.remove("cell-invalid");
     }
 }
 
