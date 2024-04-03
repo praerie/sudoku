@@ -457,9 +457,8 @@ hardBtn.addEventListener("click", function() {
 
 //generate and display puzzle
 function setGame(level) {
-    const sudokuBoard = document.getElementById("sudoku-board");
-    sudokuBoard.innerHTML = '';
-    //error: this is causing board sounds to not play
+    document.getElementById("sudoku-board").innerHTML = ''; //clear board
+    document.getElementById("nums").innerHTML = ''; //clear num keys
 
     let [startingBoard, boardSolution] = generatePuzzle(level);
     displaySudoku(startingBoard, boardSolution);
