@@ -24,23 +24,25 @@
                 <!-- 81 sudoku cells built here -->
             </div>
         </div>
-       
+
         <br/>
-        <div id="nums">
-            <!-- row of 1-9 built here -->
-            
-        </div>
+        <!-- row of 1-9 built below -->
+        <div id="nums"></div>
+
         <div id="game-controls">
             <div class="control-btn" id="undoBtn">undo</div>
             <div class="control-btn" id="hintBtn">hint</div>
             <div class="control-btn" id="generateBtn">new</div>
             <div class="control-btn" id="solveBtn">solve</div>
         </div>
+        
+        <!-- game audio -->
         <audio id="clickSound" src="sounds/click.wav"></audio>
         <audio id="controlSound" src="sounds/space.wav"></audio>
         <audio id="validSound" src="sounds/ding.wav"></audio>
         <audio id="invalidSound" src="sounds/oops.wav"></audio>
         <audio id="noMoveSound" src="sounds/click2.wav"></audio>
+
         <script src="sudoku.js"></script>
     </body>
 </html>

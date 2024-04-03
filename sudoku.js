@@ -141,9 +141,9 @@ function setHiddenCells(level) {
         case "easy": 
             return 40;
         case "medium":
-            return 50;
+            return 45;
         case "hard":
-            return 60;
+            return 50;
         default:
             return 40;
     }   
@@ -284,7 +284,10 @@ function displaySudoku(displayingBoard, boardSolution) {
             });
         }
     }
+}
 
+function buildNumKeys() {
+    console.log("inside buildNumKeys")
     for (let i=1; i<=9; i++) {
         //create num tiles
         let numTile = document.createElement("div");
@@ -457,9 +460,15 @@ hardBtn.addEventListener("click", function() {
 
 //generate and display puzzle
 function setGame(level) {
-    document.getElementById("sudoku-board").innerHTML = ''; //clear board
-    document.getElementById("nums").innerHTML = ''; //clear num keys
+    //clear board
+    document.getElementById("sudoku-board").innerHTML = ''; 
 
+    //build number key row
+    const numKeys = document.getElementById("nums");
+    console.log(numKeys.hasChildNodes())
+    if (!numKeys.hasChildNodes()) buildNumKeys(); 
+
+    //generate and display puzzle
     let [startingBoard, boardSolution] = generatePuzzle(level);
     displaySudoku(startingBoard, boardSolution);
 }
