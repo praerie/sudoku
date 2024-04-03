@@ -287,7 +287,6 @@ function displaySudoku(displayingBoard, boardSolution) {
 }
 
 function buildNumKeys() {
-    console.log("inside buildNumKeys")
     for (let i=1; i<=9; i++) {
         //create num tiles
         let numTile = document.createElement("div");
@@ -465,7 +464,6 @@ function setGame(level) {
 
     //build number key row
     const numKeys = document.getElementById("nums");
-    console.log(numKeys.hasChildNodes())
     if (!numKeys.hasChildNodes()) buildNumKeys(); 
 
     //generate and display puzzle
