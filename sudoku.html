@@ -10,30 +10,39 @@
     <body>
         <h1>Sudoku</h1>
         <hr/>
-        <h2 id="strikes">0</h2>
+        <h2 id="strikes">3</h2>
+
+        <div class="difficulty-container">
+            <div class="difficulty-btn" id="easy">easy</div>
+            <div class="difficulty-btn" id="medium">medium</div>
+            <div class="difficulty-btn" id="hard">hard</div>
+        </div>
 
         <!-- sudoku board 9x9 -->
-        <div id="sudoku-container"> 
+        <div class="sudoku-container"> 
             <div id="sudoku-board">
                 <!-- 81 sudoku cells built here -->
-                <audio id="validSound" src="sounds/ding.wav"></audio>
-                <audio id="invalidSound" src="sounds/oops.wav"></audio>
-                <audio id="noMoveSound" src="sounds/click2.wav"></audio>
             </div>
         </div>
-       
+
         <br/>
-        <div id="nums">
-            <!-- row of 1-9 built here -->
-            <audio id="clickSound" src="sounds/click.wav"></audio>
+        <!-- row of 1-9 built below -->
+        <div id="nums"></div>
+
+        <div class="game-controls">
+            <div class="control-btn" id="undoBtn">undo</div>
+            <div class="control-btn" id="hintBtn">hint</div>
+            <div class="control-btn" id="generateBtn">new</div>
+            <div class="control-btn" id="solveBtn">solve</div>
         </div>
-        <div id="game-controls">
-                <div class="control-btn" id="undoBtn">undo</div>
-                <div class="control-btn" id="hintBtn">hint</div>
-                <div class="control-btn" id="generateBtn">new</div>
-                <div class="control-btn" id="solveBtn">solve</div>
-                <audio id="controlSound" src="sounds/space.wav"></audio>
-        </div>
+        
+        <!-- game audio -->
+        <audio id="clickSound" src="sounds/click.wav"></audio>
+        <audio id="controlSound" src="sounds/space.wav"></audio>
+        <audio id="validSound" src="sounds/ding.wav"></audio>
+        <audio id="invalidSound" src="sounds/oops.wav"></audio>
+        <audio id="noMoveSound" src="sounds/click2.wav"></audio>
+
         <script src="sudoku.js"></script>
     </body>
 </html>

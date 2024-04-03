@@ -12,7 +12,7 @@ hr {
     color: indianred;
 }
 
-#sudoku-container {
+.sudoku-container {
     width: 600px;
     height: 600px;
     margin: 0 auto;
@@ -49,6 +49,15 @@ hr {
     background-color: seashell;
 }
 
+.difficulty-container {
+    display: flex;
+    justify-content: space-around;
+    width: 200px;
+    margin: 0 auto;
+    padding-bottom: 20px;
+    font-weight: 700;
+}
+
 .cell-valid {
     background-color: antiquewhite;
     color: teal;
@@ -58,16 +67,14 @@ hr {
     background-color: lightcyan;
 }
 
-.cell-invalid,
-.cell-invalid:hover,
-.last-strike:hover {
-    background-color: lightcoral;
-    color: darkred;
-}
-
-.last-strike {
+.cell-invalid {
     background-color: darkred;
     color: #F39999;
+}
+
+.cell-invalid:hover {
+    background-color: lightcoral;
+    color: darkred;
 }
 
 #nums {
@@ -114,7 +121,8 @@ hr {
     border-right: 2px solid tan;
 }
 
-#game-controls {
+.game-controls,
+.difficulty-container {
     width: 600px;
     margin: 0 auto;
     display: flex;
@@ -123,7 +131,12 @@ hr {
     align-items: center; /*center vertically*/
 }
 
-.control-btn {
+.game-controls {
+    padding: 12px 0;
+}
+
+.control-btn,
+.difficulty-btn {
     width: 120px;
     height: 48px;
     color: antiquewhite;
@@ -131,7 +144,7 @@ hr {
     outline: 4px solid antiquewhite;
     filter: drop-shadow(1px 8px 2px #444);
     border-radius: 45%;
-    margin: 40px 10px 40px 10px;
+    margin: 10px 10px 10px 10px;
     font-family: 'Courier New', Courier, monospace;
     font-weight: bold;
     font-size: 22px;
@@ -141,7 +154,8 @@ hr {
     align-items: center; /*center vertically*/
 }
 
-.control-btn:hover {
+.control-btn:hover,
+.difficulty-btn:hover {
     filter: drop-shadow(1px 3px 2px #444);
     transform: translate(0, 4px);
 }

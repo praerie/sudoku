@@ -2,7 +2,7 @@ let strikes = 3;
 const strikeLimit = 3;
 let numClicked;
 
-function generatePuzzle() {
+function generatePuzzle(level) {
     //create empty 9x9 puzzle
     let boardSolution = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0));
         //outer Array.from() creates 9 rows;
@@ -14,7 +14,7 @@ function generatePuzzle() {
 
     if (generatePuzzleRecursive(row, col, boardSolution)) { //if valid puzzle
         let boardCopy = cloneBoard(boardSolution); //deep copy of boardSolution (non-referencing)
-        let startingBoard = hideNumbers(boardCopy, boardSolution); //remove numbers to create starting puzzle
+        let startingBoard = hideNumbers(boardCopy, boardSolution, level); //remove numbers to create starting puzzle
 
         return [startingBoard, boardSolution];
     } else {
@@ -59,10 +59,8 @@ function generatePuzzleRecursive(row, col, recursiveBoard) {
     return false;
 }
 
-function hideNumbers(boardHideCells, boardSolution) {
+function hideNumbers(boardHideCells, boardSolution, difficulty) {
     let board = cloneBoard(boardHideCells); 
-
-    const difficulty = "easy"; //to-do: add difficulty buttons to interface
     const cellsToHide = setHiddenCells(difficulty);
 
     const cellCoords = [];
@@ -143,9 +141,9 @@ function setHiddenCells(level) {
         case "easy": 
             return 40;
         case "medium":
-            return 50;
+            return 45;
         case "hard":
-            return 60;
+            return 50;
         default:
             return 40;
     }   
@@ -286,7 +284,10 @@ function displaySudoku(displayingBoard, boardSolution) {
             });
         }
     }
+}
 
+function buildNumKeys() {
+    console.log("inside buildNumKeys")
     for (let i=1; i<=9; i++) {
         //create num tiles
         let numTile = document.createElement("div");
@@ -366,7 +367,7 @@ function clickCell(boardSolution) {
                 strikes = 4;
                 document.getElementById("strikes").innerText = "Out of strikes! Game over.";
                 this.innerText = numClicked.id;
-                this.classList.add("last-strike");
+                this.classList.add("cell-invalid");
 
                 playCannotMoveSound();
 
@@ -399,6 +400,13 @@ function playCannotMoveSound() {
     noMoveSound.play();
 }
 
+function playControlSound() {
+    const controlSound = document.getElementById("controlSound");
+    controlSound.volume = 0.3;
+    controlSound.currentTime = 0; 
+    controlSound.play();
+}
+
 //save moves to array, allows 'undo' 
 let moveHx = []; 
 function saveMove(cell, prevContent) {
@@ -415,40 +423,58 @@ function undo() {
     }
 }
 
+function cloneBoard(board) {
+    return JSON.parse(JSON.stringify(board));
+}
+
 //game control button sounds and listeners
 const undoBtn = document.getElementById("undoBtn");
 const hintBtn = document.getElementById("hintBtn");
 const generateBtn = document.getElementById("generateBtn");
 const solveBtn = document.getElementById("solveBtn");
 
-function clickControl() {
-    const controlSound = document.getElementById("controlSound");
-    controlSound.volume = 0.3;
-    controlSound.currentTime = 0; 
-    controlSound.play();
-}
+//difficulty level buttons
+const easyBtn = document.getElementById("easy");
+const mediumBtn = document.getElementById("medium");
+const hardBtn = document.getElementById("hard");
 
+//button event listeners
 document.addEventListener("DOMContentLoaded", function() {
-    undoBtn.addEventListener("click", clickControl);
+    undoBtn.addEventListener("click", playControlSound);
     undoBtn.addEventListener("click", undo);
-    hintBtn.addEventListener("click", clickControl);
-    generateBtn.addEventListener("click", clickControl);
-    solveBtn.addEventListener("click", clickControl);
+    hintBtn.addEventListener("click", playControlSound);
+    generateBtn.addEventListener("click", playControlSound);
+    solveBtn.addEventListener("click", playControlSound);
     solveBtn.addEventListener("click", solvePuzzle)
 });
 
-function cloneBoard(board) {
-    return JSON.parse(JSON.stringify(board));
-}
+easyBtn.addEventListener("click", function() {
+    setGame("easy");
+});
+mediumBtn.addEventListener("click", function() {
+    setGame("medium");
+});
+hardBtn.addEventListener("click", function() {
+    setGame("hard");
+});
 
 //generate and display puzzle
-function setGame() {
-    let [startingBoard, boardSolution] = generatePuzzle();
+function setGame(level) {
+    //clear board
+    document.getElementById("sudoku-board").innerHTML = ''; 
+
+    //build number key row
+    const numKeys = document.getElementById("nums");
+    console.log(numKeys.hasChildNodes())
+    if (!numKeys.hasChildNodes()) buildNumKeys(); 
+
+    //generate and display puzzle
+    let [startingBoard, boardSolution] = generatePuzzle(level);
     displaySudoku(startingBoard, boardSolution);
+    strikes = 3;
 }
 
 globalThis.onload = function() {
-    setGame();
+    setGame("default");
 }
-
 
