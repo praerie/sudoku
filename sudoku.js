@@ -471,6 +471,7 @@ function setGame(level) {
     //generate and display puzzle
     let [startingBoard, boardSolution] = generatePuzzle(level);
     displaySudoku(startingBoard, boardSolution);
+    strikes = 3;
 }
 
 globalThis.onload = function() {
